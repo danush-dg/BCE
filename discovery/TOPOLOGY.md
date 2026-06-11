@@ -89,6 +89,37 @@ IDs are permanent. Do not reassign. Sessions B, C, D, E must use M-NNN identifie
 | M-005 --[CALLS]--> M-001 | FastAPI Depends() — resolved before route body (main.py:93) | A |
 | M-005 --[CALLS]--> M-002 | Direct function call (main.py:94) — only after M-001 resolves | S |
 
+---
+
+## Stage 2 Completeness Summary — 2026-06-11
+Produced by: BCE Stage 2 Sessions A0–E (CC/CD)
+
+| Artifact | Status | NOT DETERMINABLE count | Divergences from Stage 1 | Notes |
+|---|---|---|---|---|
+| TOPOLOGY.md | COMPLETE | 0 | 0 | A01/A02/A03 all filled; Stage 2 update applied |
+| MODULE_CONTRACTS.md | COMPLETE | 0 | 1 — RESOLVED | M-001–M-012 full contracts; 1 divergence (M-008 port exposure) confirmed and signed off |
+| INTEGRATION_CONTRACTS.md | COMPLETE | 1 | N/A — Stage 2 only | 1 NOT DETERMINABLE entry (annotation candidate) |
+| INVARIANT_CATALOGUE.md | COMPLETE | 1 | 0 | IC-1–IC-14; 1 NOT DETERMINABLE entry (annotation candidate) |
+| RISK_REGISTER.md | COMPLETE | 2 | 0 | R-001–R-008; 2 NOT DETERMINABLE entries (annotation candidates) |
+
+Stage-2-Divergence items requiring engineer resolution before Stage 3:
+- **M-008 — Port 5432 exposure** (MODULE_CONTRACTS.md Known Fragility + Stage 2 Divergences section)
+  Status: RESOLVED 2026-06-11 — CONFIRMED. Stage 1 was correct but incomplete. Finding accepted; captured as R-006 (P2) in RISK_REGISTER.md. No source code change required at this time.
+
+NOT DETERMINABLE entries remaining (annotation candidates for Stage 3 / engineer annotation pass):
+- INTEGRATION_CONTRACTS.md — 1 entry
+- INVARIANT_CATALOGUE.md — 1 entry
+- RISK_REGISTER.md — 2 entries
+Total: 4 entries. All are annotation candidates requiring human operational knowledge — not CC extraction gaps.
+
+Sessions completed: A0 (CC), A (CC), F01 (CC), F02 (CC), F03 (CD), B+C (CC), D (CC), E (CD)
+Component files: A00, A02, A03, B01–B05, C01–C07 (15 files in discovery/components/)
+Domain model: DOMAIN_MODEL.json produced (non-sparse); ID_REGISTRY.md updated with E-NNN, A-NNN, SV-NNN, SVV-NNN IDs
+A01 component file gap: A01_layer_boundary_map.md not produced as a standalone file — A01 content lives in TOPOLOGY.md only. Convention gap, not content gap. May surface as P3 annotation item in Stage 3.
+
+Human gate required before Stage 3 begins.
+Engineer sign-off: _____________________________ Date: _______________
+
 Full call table, startup sequence, and async boundary detail: discovery/components/A02_module_call_map.md
 
 ---
