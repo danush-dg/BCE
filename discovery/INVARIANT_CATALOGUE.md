@@ -150,20 +150,21 @@ Stage 2 changes:
 ## IC-9 — No Internal Detail in Responses
 
 **ID:** IC-9
-**Statement:** No internal implementation detail appears in any HTTP response. Only permitted error response bodies are pre-defined static strings: `"Unauthorized"`, `"Customer not found"`, `"Internal server error"`.
+**Statement:** No internal implementation detail (tracebacks, schema names, connection strings, psycopg2 exceptions) appears in any HTTP response. Controlled static literals cover the three defined error paths: `"Unauthorized"` (auth failure, M-001), `"Customer not found"` (404, M-005), `"Internal server error"` (connection failure, M-002). Cursor-level exceptions in M-005 — raised after successful connection during `cur.execute()` or `cur.fetchone()` — fall to FastAPI's default 500 handler which returns `{"detail": "Internal Server Error"}` (capital S). This path is also non-revealing of implementation internals. Its capitalisation differs from the permitted literal set; this is an accepted boundary. M-012 TestInv09 covers the connection-failure path only.
 **Category:** Security
 **Scope:** GLOBAL
 **Why it matters:** A caller who triggers a database error and receives a traceback gains the schema, connection parameters, and technology stack.
-**Currently enforced:** YES
+**Currently enforced:** YES (controlled paths); FastAPI default covers cursor-exception path — non-revealing but outside the defined literal set (accepted — see ENGINEER NOTE below)
 **Enforcement points:**
-- api/main.py:get_db_connection:78-79 — `except Exception: raise HTTPException(status_code=500, detail="Internal server error")`. Bare `except Exception:` (no `as e` binding) — exception object is explicitly discarded. Static literal. Covers all exception types including psycopg2 errors and KeyError from missing env vars.
+- api/main.py:get_db_connection:78-79 — `except Exception: raise HTTPException(status_code=500, detail="Internal server error")`. Bare `except Exception:` — exception object discarded. Static literal. Covers all connection exceptions including psycopg2 errors and KeyError from missing env vars.
 - api/main.py:verify_api_key:66 — `detail="Unauthorized"` — static literal
 - api/main.py:get_customer:103 — `detail="Customer not found"` — static literal
-- FastAPI default exception handler: any unhandled exception in route handlers produces FastAPI's own 500 response (not the controlled literal). No unhandled code path currently exists in M-003, M-004, or M-005, but this is a per-route responsibility, not globally enforced.
+- FastAPI default exception handler: cursor-level exceptions in M-005 (after successful connect) produce `{"detail": "Internal Server Error"}`. No internal detail is revealed. Capitalisation differs from the controlled literal — accepted boundary.
 **Owning module:** M-002 (500 path — primary risk; highest-consequence failure mode)
 **Enforcing modules:** M-001, M-002, M-005
 **Source:** docs/invariant.md INV-09; docs/CLAUDE.md INV-09; docs/execution_plan.md Permitted Error Literals table
 **Invariant touch map:** S2.T3, S2.T4, S3.T3, S5.T2 (TestInv09InternalErrorIsolation in M-012)
+[ENGINEER NOTE — 2026-06-11]: IC-9 narrowed to explicitly scope the controlled-literal guarantee to the three defined error paths (connection failure, auth failure, not-found). Cursor-level exceptions in M-005 fall to FastAPI's default handler — also non-revealing, capitalisation difference accepted as an honest boundary. Option (b) (wrapping cursor operations in try/except) deferred. Resolves P1-S3-001.
 
 ---
 

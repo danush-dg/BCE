@@ -277,6 +277,7 @@ db healthcheck fails all 5 retries → api service never starts (STARTUP-FATAL).
 
 **Known Fragility**
 - [STAGE-2-DIVERGENCE — 2026-06-11]: Stage 1 noted "no external networks" as isolation evidence. Code also shows `ports: 5432:5432` on db service — Postgres accessible on host port 5432 directly, bypassing API auth and all application invariants. Development-scope risk; P2 for any shared-host or production deployment. [RESOLVED — 2026-06-11]: CONFIRMED. Stage 1 was correct but incomplete. Finding accepted; captured in RISK_REGISTER.md as R-006 (P2).
+[ENGINEER NOTE — 2026-06-11]: `ports: 5432:5432` on the db service is accepted for development scope. This system is a single-developer internal ops tool (per INTAKE_SUMMARY.md). Direct Postgres access on host port 5432 is acceptable in this deployment context. Before any shared-host or production deployment, `ports: 5432:5432` must be removed from docker-compose.yml — R-006 tracks this as a P2 action item. No code change made at this time. Resolves P1-S3-002.
 - M-012 TestInv09 calls `docker compose stop db` / `docker compose start db` — if tearDownClass fails, db container remains stopped until manual recovery.
 - No external network definitions — INV-10 confirmed at Compose layer.
 
