@@ -276,7 +276,7 @@ Column changes require matching updates in M-005 SELECT query (INV-04), response
 db healthcheck fails all 5 retries → api service never starts (STARTUP-FATAL). No `start_period` — retries begin immediately.
 
 **Known Fragility**
-- [STAGE-2-DIVERGENCE — 2026-06-11]: Stage 1 noted "no external networks" as isolation evidence. Code also shows `ports: 5432:5432` on db service — Postgres accessible on host port 5432 directly, bypassing API auth and all application invariants. Development-scope risk; P2 for any shared-host or production deployment.
+- [STAGE-2-DIVERGENCE — 2026-06-11]: Stage 1 noted "no external networks" as isolation evidence. Code also shows `ports: 5432:5432` on db service — Postgres accessible on host port 5432 directly, bypassing API auth and all application invariants. Development-scope risk; P2 for any shared-host or production deployment. [RESOLVED — 2026-06-11]: CONFIRMED. Stage 1 was correct but incomplete. Finding accepted; captured in RISK_REGISTER.md as R-006 (P2).
 - M-012 TestInv09 calls `docker compose stop db` / `docker compose start db` — if tearDownClass fails, db container remains stopped until manual recovery.
 - No external network definitions — INV-10 confirmed at Compose layer.
 
@@ -402,8 +402,10 @@ Changing `main:app` in CMD requires matching rename in main.py. Adding `--worker
 
 ## Stage 2 Divergences
 
-### STAGE-2-DIVERGENCE — M-008 — Port 5432 exposure
+### STAGE-2-DIVERGENCE — M-008 — Port 5432 exposure — RESOLVED 2026-06-11
 Stage 1 described container isolation by noting "no external networks defined." Code inspection reveals `ports: 5432:5432` on the `db` service — Postgres is accessible directly on host port 5432, bypassing all application-layer auth and invariants. Not an error in Stage 1 (Stage 1 correctly described no external networks), but a gap in the isolation picture. Flagged as P2 risk for any production or shared-host deployment.
+
+**Resolution:** CONFIRMED — finding stands. Stage 1 was incomplete, not wrong. Both facts are true: no external Docker networks defined, AND host port 5432 is exposed, creating a direct-access side-channel outside the API auth boundary. Accepted for development scope. Captured in RISK_REGISTER.md as R-006 (P2). No changes required to source code at this time — action deferred to a hardening enhancement before any production deployment. Pre-Stage 3 sign-off: complete.
 
 ### Stage 2 Confirmations (NOT divergences — design intent matched code exactly)
 - M-001: single raise for all 401 paths — INV-12 structural enforcement confirmed
