@@ -56,6 +56,58 @@ Additional modules assigned in Stage 2 (no Stage 1 skeleton): M-006, M-009, M-01
 
 ---
 
+## Entity IDs (E-NNN) — assigned Session F03
+
+| ID | Name | Type | Artifact | Assigned |
+|---|---|---|---|---|
+| E-001 | CustomerRiskProfile | Entity | DOMAIN_MODEL.json | 2026-06-11 Session F03 |
+
+Next E-NNN to assign: E-002
+
+---
+
+## Attribute IDs (A-NNN) — assigned Session F03
+
+| ID | Name | Entity | Artifact | Assigned |
+|---|---|---|---|---|
+| A-001 | customer_id | E-001 | DOMAIN_MODEL.json | 2026-06-11 Session F03 |
+| A-002 | risk_tier | E-001 | DOMAIN_MODEL.json | 2026-06-11 Session F03 |
+| A-003 | risk_factors | E-001 | DOMAIN_MODEL.json | 2026-06-11 Session F03 |
+
+Next A-NNN to assign: A-004
+
+---
+
+## StatusVocabulary IDs (SV-NNN) — assigned Session F03
+
+| ID | Name | Attribute | Artifact | Assigned |
+|---|---|---|---|---|
+| SV-001 | risk_tier_vocabulary | A-002 | DOMAIN_MODEL.json | 2026-06-11 Session F03 |
+
+Next SV-NNN to assign: SV-002
+
+---
+
+## StatusValue IDs (SVV-NNN) — assigned Session F03
+
+| ID | Value | Vocabulary | Artifact | Assigned |
+|---|---|---|---|---|
+| SVV-001 | LOW | SV-001 | DOMAIN_MODEL.json | 2026-06-11 Session F03 |
+| SVV-002 | MEDIUM | SV-001 | DOMAIN_MODEL.json | 2026-06-11 Session F03 |
+| SVV-003 | HIGH | SV-001 | DOMAIN_MODEL.json | 2026-06-11 Session F03 |
+
+Next SVV-NNN to assign: SVV-004
+
+---
+
+## Relationship IDs (REL-NNN) — assigned Session F03
+
+None. Single-table schema — no inter-entity relationships exist.
+
+Next REL-NNN to assign: REL-001
+
+---
+
 ## Registry Notes
 
 - The Stage 1 skeletons did not include the FastAPI application bootstrap (M-006), the Dockerfile (M-009), or the three test suites (M-010, M-011, M-012) as distinct modules. These were identified from source code in Session A0/A.

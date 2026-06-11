@@ -1,0 +1,99 @@
+{
+  "system": "Customer Risk API",
+  "generated": "2026-06-11",
+  "bce_version": "v2.1",
+  "sparse": false,
+  "catalogBacked": false,
+  "grokLayer": false,
+  "metricsLayer": false,
+  "canonical_layer_boundary": "customer_risk_profiles table in riskdb Postgres database",
+  "nodes": [
+    {
+      "id": "E-001",
+      "type": "Entity",
+      "name": "CustomerRiskProfile",
+      "business_definition": "NOT_DETERMINABLE",
+      "lifecycle_summary": "NOT_DETERMINABLE",
+      "synonyms": [],
+      "domain": "NOT_DETERMINABLE",
+      "annotation": "Single promoted entity within the declared canonical layer boundary. Represents a pre-assessed customer risk record. Risk data is loaded at initialisation time (M-007); the API provides read-only access only — no write paths exist through any API route.",
+      "cross_graph_edges": [
+        { "from": "M-007", "to": "E-001", "type": "OWNS_ENTITY" }
+      ]
+    },
+    {
+      "id": "A-001",
+      "type": "Attribute",
+      "name": "customer_id",
+      "canonical_name": "customer_id",
+      "data_type": "VARCHAR",
+      "business_meaning": "NOT_DETERMINABLE",
+      "is_identifier": true,
+      "annotation": "Natural key — business-assigned identifier. CUST-NNN format observed consistently across seed data and test fixtures (CUST-001 through CUST-009 in seed; CUST-999 as test sentinel for non-existent customer). VARCHAR PRIMARY KEY — no DB-level constraint enforces the CUST-NNN format; any non-null string is structurally valid. Annotation should confirm: (1) whether CUST-NNN is a system-assigned format or externally supplied; (2) whether the 3-digit space is bounded in practice."
+    },
+    {
+      "id": "A-002",
+      "type": "Attribute",
+      "name": "risk_tier",
+      "canonical_name": "risk_tier",
+      "data_type": "VARCHAR",
+      "business_meaning": "NOT_DETERMINABLE",
+      "is_identifier": false,
+      "annotation": "Controlled vocabulary — three-value closed set (LOW, MEDIUM, HIGH). Doubly enforced: CHECK constraint in DDL and VALID_TIERS set in test_invariants.py. No ordering declared in schema; LOW < MEDIUM < HIGH ordering is implied by naming only — annotation candidate (see F02 naming pattern flags). Vocabulary linked to SV-001."
+    },
+    {
+      "id": "A-003",
+      "type": "Attribute",
+      "name": "risk_factors",
+      "canonical_name": "risk_factors",
+      "data_type": "TEXT[]",
+      "business_meaning": "NOT_DETERMINABLE",
+      "null_semantic": "NOT_DETERMINABLE",
+      "is_identifier": false,
+      "disambiguation_note": "NOT NULL constraint prevents null array but permits empty array {}. Whether an empty risk_factors array is a valid business state (e.g. newly-onboarded customer with no assessed factors) is NOT DETERMINABLE from schema or seed data alone. All 9 seed rows have non-empty arrays (2–3 elements). Annotation required. UK English spelling used consistently in seed factor strings (utilisation, not utilization) — confirm intended locale for factor string authoring.",
+      "annotation": "Free-form text array — not a controlled vocabulary. 21 unique factor strings observed across 9 seed rows; no string appears across tiers. Factor strings are plain English phrases authored externally to the system (the API only reads them). No enum constraint at DB level."
+    },
+    {
+      "id": "SV-001",
+      "type": "StatusVocabulary",
+      "name": "risk_tier_vocabulary",
+      "annotation": "Vocabulary for the risk_tier field on CustomerRiskProfile. Three-value closed set. Source authority: CHECK constraint in db/init.sql and VALID_TIERS in test_invariants.py — both must be kept in sync on any future vocabulary change."
+    },
+    {
+      "id": "SVV-001",
+      "type": "StatusValue",
+      "value": "LOW",
+      "business_meaning": "NOT_DETERMINABLE",
+      "is_terminal": "NOT_DETERMINABLE",
+      "transition_trigger": "NOT_DETERMINABLE",
+      "annotation": "3 seed rows. Observed factors indicate customers in good standing with no adverse indicators. Annotation should confirm: whether LOW is a terminal state (customer relationship closed) or whether tier changes are operationally expected."
+    },
+    {
+      "id": "SVV-002",
+      "type": "StatusValue",
+      "value": "MEDIUM",
+      "business_meaning": "NOT_DETERMINABLE",
+      "is_terminal": "NOT_DETERMINABLE",
+      "transition_trigger": "NOT_DETERMINABLE",
+      "annotation": "3 seed rows. Observed factors indicate elevated but not severe indicators (late payments, moderate utilisation, partial verification). Annotation should confirm: whether MEDIUM represents a transient or stable state in the customer lifecycle."
+    },
+    {
+      "id": "SVV-003",
+      "type": "StatusValue",
+      "value": "HIGH",
+      "business_meaning": "NOT_DETERMINABLE",
+      "is_terminal": "NOT_DETERMINABLE",
+      "transition_trigger": "NOT_DETERMINABLE",
+      "annotation": "3 seed rows. Observed factors indicate serious adverse indicators (collections, fraud alert, default, county court judgement). Annotation should confirm: whether HIGH tier is re-assessed on a schedule, triggered by events, or set-and-held. No transition history available in single-table read-only schema."
+    }
+  ],
+  "edges": [
+    { "from": "E-001", "to": "A-001", "type": "HAS_ATTRIBUTE" },
+    { "from": "E-001", "to": "A-002", "type": "HAS_ATTRIBUTE" },
+    { "from": "E-001", "to": "A-003", "type": "HAS_ATTRIBUTE" },
+    { "from": "A-002", "to": "SV-001", "type": "HAS_VOCABULARY" },
+    { "from": "SV-001", "to": "SVV-001", "type": "CONTAINS_VALUE" },
+    { "from": "SV-001", "to": "SVV-002", "type": "CONTAINS_VALUE" },
+    { "from": "SV-001", "to": "SVV-003", "type": "CONTAINS_VALUE" }
+  ]
+}
